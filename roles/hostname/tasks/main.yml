@@ -1,0 +1,9 @@
+---
+
+- name: Update Hostname
+  hostname:
+    name: "{{ new_hostname }}"
+
+- name: Set hostname using hostnamectl
+  become: yes
+  command: hostnamectl set-hostname "{{ new_hostname }}"

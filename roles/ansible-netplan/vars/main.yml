@@ -1,0 +1,16 @@
+---
+# vars file for ansible-netplan
+netplan_enabled: true
+netplan_config_file: /etc/netplan/ansible-netplan.yaml
+netplan_renderer: networkd
+netplan_configuration:
+  network:
+    version: 2
+    ethernets:
+      eth0:
+        dhcp4: no
+        addresses:
+        - "{{ ansible_default_ipv4.address }}/24"  # static address on local network
+        gateway4: 192.168.0.1
+        nameservers:
+          addresses: [8.8.8.8, 8.8.4.4]
