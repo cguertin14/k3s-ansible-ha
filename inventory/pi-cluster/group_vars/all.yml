@@ -4,6 +4,7 @@ ansible_user: charles
 # No custom params (for now) for the agents.
 # k3s_agent:
 
+k3s_state: installed # 'uninstalled' to uninstall k3s
 k3s_github_url: https://github.com/k3s-io/k3s
 k3s_release_version: v1.21.0+k3s1
 k3s_etcd_datastore: true
@@ -19,4 +20,3 @@ k3s_server:
   disable:
   - traefik
   - servicelb
-
