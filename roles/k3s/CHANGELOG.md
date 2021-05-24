@@ -14,6 +14,49 @@
 ---
 -->
 
+## 2021-05-14, v2.9.1
+
+<!-- Today was a better day... <3 -->
+
+### Notable changes
+
+ - Documentation, remove references to deprecated configuration techniques #115
+ - Bugfix: Templating issue.
+
+## 2021-05-13, v2.9.0
+
+<!-- a shit day... -->
+
+### Notable changes
+
+ - Feature: Support k3s private registry configuration #114
+
+### Contributors
+
+ - [@anjia0532](https://github.com/anjia0532)
+
+
+## 2021-05-06, v2.8.5
+
+### Notable changes
+
+ - Bugfix: Unmount CSI plugin folder to avoid data lost on uninstall #113
+
+### Contributors
+
+ - [@angelnu](https://github.com/angelnu)
+
+
+## 2021-05-01, v2.8.4
+
+### Notable changes
+
+ - Fixed issue with draining nodes #112
+
+### Contributors
+
+ - [@anjia0532](https://github.com/anjia0532)
+
 ## 2021-04-18, v2.8.3
 
 ### Notable changes
