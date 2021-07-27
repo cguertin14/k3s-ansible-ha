@@ -16,7 +16,7 @@ k3s_registration_address: "{{ hostvars[groups['master'][0]]['ansible_host'] | de
 # k3s control-plane settings.
 k3s_server:
   cluster-cidr: 10.42.0.0/16
-  flannel-backend: 'none'
+  flannel-backend: 'vxlan'
   disable:
   - traefik
   - servicelb
