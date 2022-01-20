@@ -1,9 +1,6 @@
 ---
 ansible_user: charles
 
-# No custom params (for now) for the agents.
-# k3s_agent:
-
 k3s_state: installed # 'uninstalled' to uninstall k3s
 k3s_github_url: https://github.com/k3s-io/k3s
 k3s_release_version: v1.23.1+k3s1
@@ -13,6 +10,14 @@ k3s_become_for_all: true
 # IP Address of the first master node.
 k3s_registration_address: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
 
+# k3s data-place settings.
+# k3s_agent:
+#   # extra flags for the kubelet process
+#   #
+#   kubelet-arg:
+#   # remove unused container images when FS space is below 50%
+#   -  eviction-hard=nodefs.available<50%
+
 # k3s control-plane settings.
 k3s_server:
   cluster-cidr: 10.42.0.0/16
@@ -20,6 +25,12 @@ k3s_server:
   disable:
   - traefik
   - servicelb
+
+  # extra flags for the kubelet process
+  #
+  # kubelet-arg:
+  # # remove unused container images when FS space is below 50%
+  # -  eviction-hard=nodefs.available<50%
 
   # etcd backups options
   #
