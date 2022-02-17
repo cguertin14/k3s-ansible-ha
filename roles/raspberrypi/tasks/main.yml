@@ -70,13 +70,13 @@
     - video
     append: yes
 
-# - name: Mount bpf
-#   become: yes
-#   mount:
-#     src: bpffs
-#     path: /sys/fs/bpf
-#     fstype: bpf
-#     state: mounted
+- name: Mount bpf
+  become: yes
+  mount:
+    src: bpffs
+    path: /sys/fs/bpf
+    fstype: bpf
+    state: mounted
 
 # - name: Set thermal rules
 #   become: yes
