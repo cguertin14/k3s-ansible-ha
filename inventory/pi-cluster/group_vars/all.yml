@@ -3,7 +3,7 @@ ansible_user: charles
 
 k3s_state: installed # 'uninstalled' to uninstall k3s
 k3s_github_url: https://github.com/k3s-io/k3s
-k3s_release_version: v1.23.1+k3s1
+k3s_release_version: v1.23.3+k3s1
 k3s_etcd_datastore: true
 k3s_become_for_all: true
 
@@ -21,8 +21,9 @@ k3s_registration_address: "{{ hostvars[groups['master'][0]]['ansible_host'] | de
 # k3s control-plane settings.
 k3s_server:
   cluster-cidr: 10.42.0.0/16
-  flannel-backend: 'vxlan'
+  flannel-backend: 'none'
   disable:
+  - flannel
   - traefik
   - servicelb
 
