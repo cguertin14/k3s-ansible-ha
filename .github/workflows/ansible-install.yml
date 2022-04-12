@@ -30,17 +30,25 @@ jobs:
 
       - name: Ping local servers (test)
         run: |
-          ping 192.168.0.2 -c10
-          ping 192.168.0.202 -c10
+          ping 192.168.0.2 -c5
+          ping 192.168.0.3 -c5
+          ping 192.168.0.4 -c5
+          ping 192.168.0.5 -c5
+          ping 192.168.0.6 -c5
+          ping 192.168.0.7 -c5
+          ping 192.168.0.8 -c5
+          ping 192.168.0.9 -c5
 
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
           # Required, playbook filepath
           playbook: site.yml
-          # Optional, directory where playbooks live
+          # Directory where playbooks live
           directory: ./
-          # Optional, additional flags to pass to ansible-playbook
+          # SSH private key
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Additional flags to pass to ansible-playbook
           options: |
             --inventory inventory/pi-cluster/hosts.ini
             --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
