@@ -19,7 +19,7 @@ jobs:
 
       - name: Setup VPN config
         run: |
-          echo ${{ secrets.VPN_CONFIG }} > config.ovpn
+          echo "${{ secrets.VPN_CONFIG }}" > config.ovpn
 
       - name: Connect VPN
         run: sudo openvpn --config config.ovpn --log vpn.log --daemon
