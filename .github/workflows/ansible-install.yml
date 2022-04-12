@@ -19,10 +19,10 @@ jobs:
 
       - name: Setup VPN config
         run: |
-          echo "${{ secrets.CA_CRT }}" > config.ovpn
+          echo "${{ secrets.VPN_CONFIG }}" > config.ovpn
 
       - name: Connect VPN
-        run: sudo openvpn --config "config.ovpn" --log "vpn.log" --daemon
+        run: sudo openvpn --config config.ovpn --log vpn.log --daemon
 
       - name: Wait for a VPN connection
         timeout-minutes: 1
