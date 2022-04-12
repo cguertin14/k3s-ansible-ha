@@ -1,0 +1,67 @@
+name: Ansible Updates
+
+on:
+  schedule:
+    - cron: '0 0 * * MON'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+
+      - name: Install OpenVPN
+        run: |
+          sudo apt-get update
+          sudo apt-get --assume-yes --no-install-recommends install openvpn          
+
+      - name: Setup VPN config
+        run: |
+          echo "${{ secrets.VPN_CONFIG }}" > config.ovpn
+
+      - name: Connect VPN
+        run: sudo openvpn --config config.ovpn --log vpn.log --daemon
+
+      - name: Wait for a VPN connection
+        timeout-minutes: 1
+        run: until ping -c1 192.168.0.2; do sleep 2; done
+
+      - name: Ping local servers (test)
+        run: |
+          ping 192.168.0.2 -c5
+          ping 192.168.0.3 -c5
+          ping 192.168.0.4 -c5
+          ping 192.168.0.5 -c5
+          ping 192.168.0.6 -c5
+          ping 192.168.0.7 -c5
+          ping 192.168.0.8 -c5
+          ping 192.168.0.9 -c5
+
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          # Required, playbook filepath
+          playbook: updates.yml
+          # Directory where playbooks live
+          directory: ./
+          # SSH private key
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Additional flags to pass to ansible-playbook
+          options: |
+            --inventory inventory/pi-cluster/hosts.ini
+            --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
+            --verbose
+  
+      - name: Kill VPN connection
+        if: always()
+        run: |
+          sudo chmod 777 vpn.log
+          sudo killall openvpn          
+
+      - name: Upload VPN logs
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: VPN logs
+          path: vpn.log
