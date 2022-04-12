@@ -31,6 +31,7 @@ jobs:
       - name: Ping local servers (test)
         run: |
           ping 192.168.0.2 -c10
+          ping 192.168.0.202 -c10
 
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
