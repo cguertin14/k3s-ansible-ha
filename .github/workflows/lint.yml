@@ -1,16 +1,14 @@
----
 name: Lint
-'on':
+on:
   pull_request:
   push:
     branches:
       - master
 
 jobs:
-
   test:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Check out the codebase.
