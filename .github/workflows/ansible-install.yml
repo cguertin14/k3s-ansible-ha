@@ -1,0 +1,55 @@
+name: Ansible Installation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+
+      - name: Install OpenVPN
+        run: |
+          sudo apt-get update
+          sudo apt-get --assume-yes --no-install-recommends install openvpn          
+
+      - name: Setup VPN config
+        run: |
+          echo "${{ secrets.CA_CRT }}" > config.ovpn
+
+      - name: Connect VPN
+        run: sudo openvpn --config "config.ovpn" --log "vpn.log" --daemon
+
+      - name: Wait for a VPN connection
+        timeout-minutes: 1
+        run: until ping -c1 192.168.0.2; do sleep 2; done
+
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          # Required, playbook filepath
+          playbook: site.yml
+          # Optional, directory where playbooks live
+          directory: ./
+          # Optional, additional flags to pass to ansible-playbook
+          options: |
+            --inventory inventory/pi-cluster/hosts.ini
+            --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
+            --verbose
+  
+      - name: Kill VPN connection
+        if: always()
+        run: |
+          sudo chmod 777 vpn.log
+          sudo killall openvpn          
+
+      - name: Upload VPN logs
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: VPN logs
+          path: vpn.log
