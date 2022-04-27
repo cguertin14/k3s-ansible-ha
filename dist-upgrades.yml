@@ -1,0 +1,44 @@
+---
+
+- name: Apply updates to APT on each node
+  hosts: k3s_cluster
+  gather_facts: yes
+  become: yes
+  tasks:
+  - name: Update apt-get repo and cache
+    apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+  - name: Upgrade all apt packages
+    apt: upgrade=dist force_apt_get=yes
+
+  - name: Remove dependencies that are no longer required
+    apt:
+      autoremove: yes
+
+  - name: Stop service k3s, if started
+    ansible.builtin.service:
+      name: k3s
+      state: stopped
+
+  - name: Upgrade distribution version (dev mode enabled)
+    become: yes
+    command: do-release-upgrade -f DistUpgradeViewNonInteractive -d
+
+  - name: Recompile vmlinuz boot file into vmlinux
+    command: dd if=vmlinuz bs=1 | zcat > vmlinux
+    args:
+      chdir: /boot
+
+  - name: Check if a reboot is needed
+    register: reboot_required_file
+    stat: path=/var/run/reboot-required get_md5=no
+
+  - name: Reboot the box if kernel updated
+    reboot:
+      msg: "Reboot initiated by Ansible for kernel updates"
+      connect_timeout: 5
+      reboot_timeout: 300
+      pre_reboot_delay: 0
+      post_reboot_delay: 30
+      test_command: uptime
+    when: reboot_required_file.stat.exists
