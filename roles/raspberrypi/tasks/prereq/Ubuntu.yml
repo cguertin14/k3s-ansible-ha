@@ -66,35 +66,6 @@
   become: yes
   command: iptables-save
 
-# Following this guide: https://cwesystems.com/?p=231
-- name: Disable ipv6 - 1
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.all.disable_ipv6
-    value: '1'
-    state: present
-    reload: no
-
-- name: Disable ipv6 - 2
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.default.disable_ipv6
-    value: '1'
-    state: present
-    reload: no
-
-- name: Disable ipv6 - 3
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.lo.disable_ipv6
-    value: '1'
-    state: present
-    reload: no
-
-- name: Disable ipv6 - 4
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.eth0.disable_ipv6
-    value: '1'
-    state: present
-    reload: yes
-
 - name: Create rc.local file
   command: touch /etc/rc.local
   args:
