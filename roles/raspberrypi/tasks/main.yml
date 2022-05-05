@@ -51,14 +51,6 @@
   when:
     - raspberry_pi|default(false)
 
-- name: Install APT packages
-  become: yes
-  apt:
-    pkg:
-    - rpi-eeprom
-    - nfs-common
-    - net-tools
-
 - name: Run rpi-eeprom update on Pi
   become: yes
   command: rpi-eeprom-update
