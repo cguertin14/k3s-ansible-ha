@@ -6,3 +6,103 @@
     regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
     line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
   notify: reboot
+
+- name: Install APT packages
+  become: yes
+  apt:
+    autoremove: yes
+    pkg:
+    - linux-modules-extra-raspi
+    - raspi-config
+    - rpi-eeprom
+    - nfs-common
+    - net-tools
+
+## For more info: 
+#
+# * https://rancher.com/docs/k3s/latest/en/advanced/#enabling-legacy-iptables-on-raspbian-buster
+# * https://github.com/k3s-io/k3s/issues/1019#issuecomment-593043089
+- name: Use legacy iptables (part 1)
+  become: yes
+  command: iptables -F
+
+- name: Use legacy iptables ipv4 (part 2)
+  become: yes
+  community.general.alternatives:
+    name: iptables
+    path: /usr/sbin/iptables-legacy
+
+- name: Use legacy iptables ipv6 (part 3)
+  become: yes
+  community.general.alternatives:
+    name: ip6tables
+    path: /usr/sbin/ip6tables-legacy
+
+- name: Enable internal traffic
+  become: yes
+  ansible.builtin.iptables:
+    chain: INPUT
+    source: "{{ k3s_pods_cidr }}"
+    in_interface: cilium_host
+    jump: ACCEPT
+
+# Reference: https://github.com/cilium/cilium/issues/18131#issuecomment-988160016
+- name: Override network filtering settings
+  become: yes
+  copy:
+    dest: /etc/sysctl.d/90-override.conf
+    content: |
+      net.ipv4.conf.default.rp_filter = 0
+      net.ipv4.conf.*.rp_filter = 0
+
+- name: Disable ufw firewall
+  become: yes
+  ansible.builtin.service:
+    name: ufw
+    state: stopped
+    enabled: false
+
+- name: Save iptables rules
+  become: yes
+  command: iptables-save
+
+# Following this guide: https://cwesystems.com/?p=231
+- name: Disable ipv6 - 1
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.disable_ipv6
+    value: '1'
+    state: present
+    reload: no
+
+- name: Disable ipv6 - 2
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.default.disable_ipv6
+    value: '1'
+    state: present
+    reload: no
+
+- name: Disable ipv6 - 3
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.lo.disable_ipv6
+    value: '1'
+    state: present
+    reload: no
+
+- name: Disable ipv6 - 4
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.eth0.disable_ipv6
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Create rc.local file
+  command: touch /etc/rc.local
+  args:
+    creates: /etc/rc.local
+
+- name: Append content to /etc/rc.local
+  lineinfile:
+    path: /etc/rc.local
+    backrefs: yes
+    regexp: '^((?!.*\service procps reload\b).*)$'
+    line: '\1 service procps reload'
