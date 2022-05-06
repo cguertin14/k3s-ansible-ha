@@ -4,7 +4,7 @@ ansible_user: charles
 k3s_state: installed # 'uninstalled' to uninstall k3s
 k3s_pods_cidr: 10.42.0.0/16
 k3s_github_url: https://github.com/k3s-io/k3s
-k3s_release_version: v1.23.5+k3s1
+k3s_release_version: v1.23.6+k3s1
 k3s_etcd_datastore: true
 k3s_become: true
 
