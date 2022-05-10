@@ -22,58 +22,61 @@
 #
 # * https://rancher.com/docs/k3s/latest/en/advanced/#enabling-legacy-iptables-on-raspbian-buster
 # * https://github.com/k3s-io/k3s/issues/1019#issuecomment-593043089
-- name: Use legacy iptables (part 1)
-  become: yes
-  command: iptables -F
 
-- name: Use legacy iptables ipv4 (part 2)
-  become: yes
-  community.general.alternatives:
-    name: iptables
-    path: /usr/sbin/iptables-legacy
+### UNCOMMENT FOLLOWING LINES ON FIRST INSTALL ONLY.
 
-- name: Use legacy iptables ipv6 (part 3)
-  become: yes
-  community.general.alternatives:
-    name: ip6tables
-    path: /usr/sbin/ip6tables-legacy
+# - name: Use legacy iptables (part 1)
+#   become: yes
+#   command: iptables -F
 
-- name: Enable internal traffic
-  become: yes
-  ansible.builtin.iptables:
-    chain: INPUT
-    source: "{{ k3s_pods_cidr }}"
-    in_interface: cilium_host
-    jump: ACCEPT
+# - name: Use legacy iptables ipv4 (part 2)
+#   become: yes
+#   community.general.alternatives:
+#     name: iptables
+#     path: /usr/sbin/iptables-legacy
 
-# Reference: https://github.com/cilium/cilium/issues/18131#issuecomment-988160016
-- name: Override network filtering settings
-  become: yes
-  copy:
-    dest: /etc/sysctl.d/90-override.conf
-    content: |
-      net.ipv4.conf.default.rp_filter = 0
-      net.ipv4.conf.*.rp_filter = 0
+# - name: Use legacy iptables ipv6 (part 3)
+#   become: yes
+#   community.general.alternatives:
+#     name: ip6tables
+#     path: /usr/sbin/ip6tables-legacy
 
-- name: Disable ufw firewall
-  become: yes
-  ansible.builtin.service:
-    name: ufw
-    state: stopped
-    enabled: false
+# - name: Enable internal traffic
+#   become: yes
+#   ansible.builtin.iptables:
+#     chain: INPUT
+#     source: "{{ k3s_pods_cidr }}"
+#     in_interface: cilium_host
+#     jump: ACCEPT
 
-- name: Save iptables rules
-  become: yes
-  command: iptables-save
+# # Reference: https://github.com/cilium/cilium/issues/18131#issuecomment-988160016
+# - name: Override network filtering settings
+#   become: yes
+#   copy:
+#     dest: /etc/sysctl.d/90-override.conf
+#     content: |
+#       net.ipv4.conf.default.rp_filter = 0
+#       net.ipv4.conf.*.rp_filter = 0
 
-- name: Create rc.local file
-  command: touch /etc/rc.local
-  args:
-    creates: /etc/rc.local
+# - name: Disable ufw firewall
+#   become: yes
+#   ansible.builtin.service:
+#     name: ufw
+#     state: stopped
+#     enabled: false
 
-- name: Append content to /etc/rc.local
-  lineinfile:
-    path: /etc/rc.local
-    backrefs: yes
-    regexp: '^((?!.*\service procps reload\b).*)$'
-    line: '\1 service procps reload'
+# - name: Save iptables rules
+#   become: yes
+#   command: iptables-save
+
+# - name: Create rc.local file
+#   command: touch /etc/rc.local
+#   args:
+#     creates: /etc/rc.local
+
+# - name: Append content to /etc/rc.local
+#   lineinfile:
+#     path: /etc/rc.local
+#     backrefs: yes
+#     regexp: '^((?!.*\service procps reload\b).*)$'
+#     line: '\1 service procps reload'
