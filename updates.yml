@@ -5,11 +5,8 @@
   gather_facts: yes
   become: yes
   tasks:
-  - name: Update apt-get repo and cache
+  - name: Update apt-get repo and cache, plus packages
     apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
-
-  - name: Upgrade all apt packages
-    apt: force_apt_get=yes
 
   - name: Remove dependencies that are no longer required
     apt:
