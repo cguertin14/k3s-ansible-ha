@@ -27,6 +27,7 @@ k3s_server:
   - flannel
   - traefik
   - servicelb
+  - metrics-server
 
   # extra flags for the kubelet process
   #
