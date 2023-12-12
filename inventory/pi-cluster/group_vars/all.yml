@@ -37,9 +37,8 @@ k3s_server:
 
   # etcd backups options
   #
-  etcd-snapshot-schedule-cron: '0 2 * * *' # everyday at 2AM
+  etcd-snapshot-schedule-cron: '*/3 * * * *' # '0 2 * * *' # everyday at 2AM
   etcd-snapshot-retention: '7' # keep 7 backups in total (for a 7-day period)
-  # etcd-snapshot-dir: /var/lib/rancher/k3s/server/db/snapshots
   
   # etcd restore options
   #
