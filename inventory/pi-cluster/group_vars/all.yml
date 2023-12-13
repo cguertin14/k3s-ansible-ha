@@ -5,8 +5,10 @@ k3s_state: installed # 'uninstalled' to uninstall k3s
 k3s_pods_cidr: 10.42.0.0/16
 k3s_github_url: https://github.com/k3s-io/k3s
 k3s_release_version: v1.28.4+k3s2
-k3s_etcd_datastore: true
 k3s_become: true
+
+# Use etcd as an embedded datastore.
+k3s_etcd_datastore: true
 
 # IP Address of the first master node.
 k3s_registration_address: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
@@ -37,7 +39,7 @@ k3s_server:
 
   # etcd backups options
   #
-  etcd-snapshot-schedule-cron: '*/3 * * * *' # '0 2 * * *' # everyday at 2AM
+  etcd-snapshot-schedule-cron: '0 2 * * *' # everyday at 2AM
   etcd-snapshot-retention: '7' # keep 7 backups in total (for a 7-day period)
   
   # etcd restore options
