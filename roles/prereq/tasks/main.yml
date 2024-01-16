@@ -51,3 +51,26 @@
     path: /etc/sudoers
     validate: 'visudo -cf %s'
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: Install APT packages
+  become: true
+  apt:
+    autoremove: yes
+    pkg:
+    - nfs-common
+    - net-tools
+
+- name: Add Ansible user to video group
+  user:
+    name: '{{ ansible_user }}'
+    groups: 
+    - video
+    append: yes
+
+- name: Mount bpf
+  become: true
+  mount:
+    src: bpffs
+    path: /sys/fs/bpf
+    fstype: bpf
+    state: mounted

@@ -39,7 +39,7 @@ that can be set for this role.
   any_errors_fatal: true
   roles:
     - role: ansible-netplan
-      become: yes
+      become: true
       # This role will do nothing unless netplan_enabled is true.
       netplan_enabled: true
       # The default is /etc/netplan/config.yaml.

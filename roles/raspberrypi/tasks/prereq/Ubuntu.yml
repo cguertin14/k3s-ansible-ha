@@ -8,15 +8,13 @@
   notify: reboot
 
 - name: Install APT packages
-  become: yes
+  become: true
   apt:
     autoremove: yes
     pkg:
     - linux-modules-extra-raspi
     - raspi-config
     - rpi-eeprom
-    - nfs-common
-    - net-tools
 
 ## For more info: 
 #
@@ -26,23 +24,23 @@
 ### UNCOMMENT FOLLOWING LINES ON FIRST INSTALL ONLY.
 
 # - name: Use legacy iptables (part 1)
-#   become: yes
+#   become: true
 #   command: iptables -F
 
 # - name: Use legacy iptables ipv4 (part 2)
-#   become: yes
+#   become: true
 #   community.general.alternatives:
 #     name: iptables
 #     path: /usr/sbin/iptables-legacy
 
 # - name: Use legacy iptables ipv6 (part 3)
-#   become: yes
+#   become: true
 #   community.general.alternatives:
 #     name: ip6tables
 #     path: /usr/sbin/ip6tables-legacy
 
 # - name: Enable internal traffic
-#   become: yes
+#   become: true
 #   ansible.builtin.iptables:
 #     chain: INPUT
 #     source: "{{ k3s_pods_cidr }}"
@@ -51,7 +49,7 @@
 
 # # Reference: https://github.com/cilium/cilium/issues/18131#issuecomment-988160016
 # - name: Override network filtering settings
-#   become: yes
+#   become: true
 #   copy:
 #     dest: /etc/sysctl.d/90-override.conf
 #     content: |
@@ -59,14 +57,14 @@
 #       net.ipv4.conf.*.rp_filter = 0
 
 # - name: Disable ufw firewall
-#   become: yes
+#   become: true
 #   ansible.builtin.service:
 #     name: ufw
 #     state: stopped
 #     enabled: false
 
 # - name: Save iptables rules
-#   become: yes
+#   become: true
 #   command: iptables-save
 
 # - name: Create rc.local file
