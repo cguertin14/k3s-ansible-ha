@@ -1,0 +1,48 @@
+---
+ansible_user: charles
+
+k3s_state: installed # 'uninstalled' to uninstall k3s
+k3s_pods_cidr: 10.42.0.0/16
+k3s_github_url: https://github.com/k3s-io/k3s
+k3s_release_version: v1.29.0+k3s1
+k3s_become: true
+
+# Use etcd as an embedded datastore.
+k3s_etcd_datastore: true
+
+# IP Address of the first master node.
+k3s_registration_address: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
+
+# k3s data-plane settings.
+# k3s_agent:
+#   # extra flags for the kubelet process
+#   #
+#   kubelet-arg:
+#   # remove unused container images when FS space is below 50%
+#   -  eviction-hard=nodefs.available<50%
+
+# k3s control-plane settings.
+k3s_server:
+  flannel-backend: 'none'
+  disable-network-policy: 'true'
+  disable:
+  - flannel
+  - traefik
+  - servicelb
+  - metrics-server
+
+  # extra flags for the kubelet process
+  #
+  # kubelet-arg:
+  # # remove unused container images when FS space is below 50%
+  # -  eviction-hard=nodefs.available<50%
+
+  # etcd backups options
+  #
+  etcd-snapshot-schedule-cron: '0 2 * * *' # everyday at 2AM
+  etcd-snapshot-retention: '7' # keep 7 backups in total (for a 7-day period)
+  
+  # etcd restore options
+  #
+  # cluster-reset:
+  # cluster-reset-restore-path: /var/lib/rancher/k3s/server/db/snapshots/<SNAPSHOT_FILE_NAME>
