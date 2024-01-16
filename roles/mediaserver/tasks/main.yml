@@ -1,0 +1,17 @@
+# Docs: https://jellyfin.org/docs/general/administration/hardware-acceleration/intel
+
+- name: Add Ansible user to render group
+  become: true
+  user:
+    name: '{{ ansible_user }}'
+    append: yes
+    groups: 
+    - render
+
+- name: Install APT packages
+  become: true
+  apt:
+    autoremove: yes
+    pkg:
+    - linux-generic-hwe-22.04 # Warning: Ubuntu 22.04-specific, irrelevant on Linux Kernel >=5.16
+    - intel-opencl-icd

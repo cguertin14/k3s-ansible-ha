@@ -63,9 +63,9 @@
 - name: Add Ansible user to video group
   user:
     name: '{{ ansible_user }}'
+    append: yes
     groups: 
     - video
-    append: yes
 
 - name: Mount bpf
   become: true
