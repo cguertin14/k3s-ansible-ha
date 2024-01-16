@@ -43,14 +43,14 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           # Required, playbook filepath
-          playbook: site.yml
+          playbook: install.yml
           # Directory where playbooks live
-          directory: ./
+          directory: playbooks/
           # SSH private key
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           # Additional flags to pass to ansible-playbook
           options: |
-            --inventory inventory/pi-cluster/hosts.ini
+            --inventory inventory/cluster/hosts.ini
             --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
             --verbose
   

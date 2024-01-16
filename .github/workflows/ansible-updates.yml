@@ -44,12 +44,12 @@ jobs:
           # Required, playbook filepath
           playbook: updates.yml
           # Directory where playbooks live
-          directory: ./
+          directory: playbooks/
           # SSH private key
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           # Additional flags to pass to ansible-playbook
           options: |
-            --inventory inventory/pi-cluster/hosts.ini
+            --inventory inventory/cluster/hosts.ini
             --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
             --verbose
   
