@@ -23,58 +23,58 @@
 
 ### UNCOMMENT FOLLOWING LINES ON FIRST INSTALL ONLY.
 
-- name: Use legacy iptables (part 1)
-  become: true
-  command: iptables -F
+# - name: Use legacy iptables (part 1)
+#   become: true
+#   command: iptables -F
 
-- name: Use legacy iptables ipv4 (part 2)
-  become: true
-  community.general.alternatives:
-    name: iptables
-    path: /usr/sbin/iptables-legacy
+# - name: Use legacy iptables ipv4 (part 2)
+#   become: true
+#   community.general.alternatives:
+#     name: iptables
+#     path: /usr/sbin/iptables-legacy
 
-- name: Use legacy iptables ipv6 (part 3)
-  become: true
-  community.general.alternatives:
-    name: ip6tables
-    path: /usr/sbin/ip6tables-legacy
+# - name: Use legacy iptables ipv6 (part 3)
+#   become: true
+#   community.general.alternatives:
+#     name: ip6tables
+#     path: /usr/sbin/ip6tables-legacy
 
-- name: Enable internal traffic
-  become: true
-  ansible.builtin.iptables:
-    chain: INPUT
-    source: "{{ k3s_pods_cidr }}"
-    in_interface: cilium_host
-    jump: ACCEPT
+# - name: Enable internal traffic
+#   become: true
+#   ansible.builtin.iptables:
+#     chain: INPUT
+#     source: "{{ k3s_pods_cidr }}"
+#     in_interface: cilium_host
+#     jump: ACCEPT
 
-# Reference: https://github.com/cilium/cilium/issues/18131#issuecomment-988160016
-- name: Override network filtering settings
-  become: true
-  copy:
-    dest: /etc/sysctl.d/90-override.conf
-    content: |
-      net.ipv4.conf.default.rp_filter = 0
-      net.ipv4.conf.*.rp_filter = 0
+# # Reference: https://github.com/cilium/cilium/issues/18131#issuecomment-988160016
+# - name: Override network filtering settings
+#   become: true
+#   copy:
+#     dest: /etc/sysctl.d/90-override.conf
+#     content: |
+#       net.ipv4.conf.default.rp_filter = 0
+#       net.ipv4.conf.*.rp_filter = 0
 
-- name: Disable ufw firewall
-  become: true
-  ansible.builtin.service:
-    name: ufw
-    state: stopped
-    enabled: false
+# - name: Disable ufw firewall
+#   become: true
+#   ansible.builtin.service:
+#     name: ufw
+#     state: stopped
+#     enabled: false
 
-- name: Save iptables rules
-  become: true
-  command: iptables-save
+# - name: Save iptables rules
+#   become: true
+#   command: iptables-save
 
-- name: Create rc.local file
-  command: touch /etc/rc.local
-  args:
-    creates: /etc/rc.local
+# - name: Create rc.local file
+#   command: touch /etc/rc.local
+#   args:
+#     creates: /etc/rc.local
 
-- name: Append content to /etc/rc.local
-  lineinfile:
-    path: /etc/rc.local
-    backrefs: yes
-    regexp: '^((?!.*\service procps reload\b).*)$'
-    line: '\1 service procps reload'
+# - name: Append content to /etc/rc.local
+#   lineinfile:
+#     path: /etc/rc.local
+#     backrefs: yes
+#     regexp: '^((?!.*\service procps reload\b).*)$'
+#     line: '\1 service procps reload'
