@@ -2,22 +2,22 @@
 
 - name: Apply updates to APT on each node
   hosts: k3s_cluster
-  gather_facts: yes
-  become: yes
+  gather_facts: true
+  become: true
   tasks:
   - name: Update apt-get repo and cache, plus packages
     apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
 
   - name: Wait for dpkg to be usable
-    become: yes
+    become: true
     shell:  while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
 
   - name: Upgrade apt packages
-    become: yes
+    become: true
     apt: upgrade=yes
 
   - name: Wait for dpkg to be usable
-    become: yes
+    become: true
     shell:  while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
 
   - name: Remove dependencies that are no longer required

@@ -2,8 +2,8 @@
 
 - name: Apply updates to APT on each node
   hosts: k3s_cluster
-  gather_facts: yes
-  become: yes
+  gather_facts: true
+  become: true
   tasks:
   - name: Update apt-get repo and cache
     apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
@@ -21,7 +21,7 @@
       state: stopped
 
   - name: Upgrade distribution version (dev mode enabled)
-    become: yes
+    become: true
     command: do-release-upgrade -f DistUpgradeViewNonInteractive -d
 
   - name: Recompile vmlinuz boot file into vmlinux

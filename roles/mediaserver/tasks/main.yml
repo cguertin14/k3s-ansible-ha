@@ -1,20 +1,20 @@
----
-- name: Enable cgroup via boot commandline if not already enabled for Ubuntu on a Raspberry Pi
-  lineinfile:
-    path: /boot/firmware/cmdline.txt
-    backrefs: yes
-    regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
-    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
-  notify: reboot
+# Docs: https://jellyfin.org/docs/general/administration/hardware-acceleration/intel
+
+- name: Add Ansible user to render group
+  become: true
+  user:
+    name: '{{ ansible_user }}'
+    append: yes
+    groups: 
+    - render
 
 - name: Install APT packages
   become: true
   apt:
     autoremove: yes
     pkg:
-    - linux-modules-extra-raspi
-    - raspi-config
-    - rpi-eeprom
+    - linux-generic-hwe-22.04 # Warning: Ubuntu 22.04-specific, irrelevant on Linux Kernel >=5.16
+    - intel-opencl-icd
 
 ## For more info: 
 #

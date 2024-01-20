@@ -5,5 +5,5 @@
     name: "{{ new_hostname }}"
 
 - name: Set hostname using hostnamectl
-  become: yes
+  become: true
   command: hostnamectl set-hostname "{{ new_hostname }}"
