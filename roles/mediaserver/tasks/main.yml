@@ -8,6 +8,9 @@
     groups: 
     - render
 
+#
+# CRUCIAL packages without which Jellyfin Transcoding will not work.
+#
 - name: Install APT packages
   become: true
   apt:
@@ -15,6 +18,9 @@
     pkg:
     - linux-generic-hwe-22.04 # Warning: Ubuntu 22.04-specific, irrelevant on Linux Kernel >=5.16
     - intel-opencl-icd
+    - intel-media-va-driver-non-free
+    - intel-gpu-tools
+    - libdrm-intel1
 
 ## For more info: 
 #
