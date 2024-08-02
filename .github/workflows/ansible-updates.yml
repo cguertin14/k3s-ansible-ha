@@ -2,7 +2,7 @@ name: Ansible Updates
 
 on:
   schedule:
-    - cron: '*/2 * * * *' # '0 0 * * MON'
+    - cron: '0 0 * * MON'
 
 jobs:
   deploy:
