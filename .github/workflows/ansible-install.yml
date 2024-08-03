@@ -15,14 +15,14 @@ jobs:
       - name: Install OpenVPN
         run: |
           sudo apt-get update
-          sudo apt-get --assume-yes --no-install-recommends install openvpn          
+          sudo apt-get --assume-yes --no-install-recommends install openvpn3
 
       - name: Setup VPN config
         run: |
           echo "${{ secrets.VPN_CONFIG }}" > config.ovpn
 
       - name: Connect VPN
-        run: sudo openvpn --config config.ovpn --log vpn.log --daemon
+        run: sudo openvpn3 session-start --dco true --config config.ovpn --background
 
       - name: Wait for a VPN connection
         timeout-minutes: 1
@@ -57,13 +57,4 @@ jobs:
   
       - name: Kill VPN connection
         if: always()
-        run: |
-          sudo chmod 777 vpn.log
-          sudo killall openvpn          
-
-      - name: Upload VPN logs
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: VPN logs
-          path: vpn.log
+        run: sudo killall openvpn3
