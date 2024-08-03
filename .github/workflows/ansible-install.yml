@@ -14,12 +14,12 @@ jobs:
 
       - name: Install OpenVPN
         run: |
-          sudo apt-get update
-          sudo apt-get --assume-yes --no-install-recommends install apt-transport-https curl
-          sudo mkdir -p /etc/apt/keyrings && curl -fsSL https://packages.openvpn.net/packages-repo.gpg | sudo tee /etc/apt/keyrings/openvpn.asc
-          DISTRO=$(lsb_release -c | awk '{print $2}')
-          echo "deb [signed-by=/etc/apt/keyrings/openvpn.asc] https://packages.openvpn.net/openvpn3/debian $DISTRO main" | sudo tee /etc/apt/sources.list.d/openvpn-packages.list
-          sudo apt install openvpn3
+          export DISTRO=$(lsb_release --codename | cut -f2)
+          sudo apt-get install -y apt-transport-https
+          sudo wget https://swupdate.openvpn.net/repos/openvpn-repo-pkg-key.pub
+          sudo apt-key add openvpn-repo-pkg-key.pub
+          sudo wget -O /etc/apt/sources.list.d/openvpn3.list https://swupdate.openvpn.net/community/openvpn3/repos/openvpn3-$DISTRO.list
+          sudo apt-get update -y && sudo apt-get install -y openvpn3
 
       - name: Setup VPN config
         run: |
