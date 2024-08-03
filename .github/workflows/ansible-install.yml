@@ -12,17 +12,11 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v2
 
-      - name: Install OpenVPN
-        run: |
-          sudo apt-get update
-          sudo apt-get --assume-yes --no-install-recommends install openvpn3
-
-      - name: Setup VPN config
-        run: |
-          echo "${{ secrets.VPN_CONFIG }}" > config.ovpn
-
-      - name: Connect VPN
-        run: sudo openvpn3 session-start --dco true --config config.ovpn --background
+      - uses: dbritto-dev/openvpn3-action@main
+        with:
+          vpn-client-config: ${{ secrets.VPN_CONFIG }}
+          script: |
+            sudo openvpn3 sessions-list
 
       - name: Wait for a VPN connection
         timeout-minutes: 1
