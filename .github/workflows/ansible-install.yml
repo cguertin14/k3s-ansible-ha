@@ -62,4 +62,4 @@ jobs:
   
       - name: Kill VPN connection
         if: always()
-        run: sudo killall openvpn3
+        run: sudo openvpn3 --config config.ovpn --disconnect
