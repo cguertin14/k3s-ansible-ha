@@ -11,14 +11,19 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v2
 
+      # Taken here: https://github.com/dbritto-dev/openvpn3-action/blob/main/action.yml#L25
       - name: Install OpenVPN
         run: |
-          sudo apt-get update
-          sudo apt-get --assume-yes --no-install-recommends install openvpn3
+          export DISTRO=$(lsb_release --codename | cut -f2)
+          sudo apt-get install -y apt-transport-https
+          sudo wget https://swupdate.openvpn.net/repos/openvpn-repo-pkg-key.pub
+          sudo apt-key add openvpn-repo-pkg-key.pub
+          sudo wget -O /etc/apt/sources.list.d/openvpn3.list https://swupdate.openvpn.net/community/openvpn3/repos/openvpn3-$DISTRO.list
+          sudo apt-get update -y && sudo apt-get install -y openvpn3
 
       - name: Setup VPN config
         run: |
-          echo "${{ secrets.VPN_CONFIG }}" > config.ovpn
+          echo -n "${{ secrets.VPN_CONFIG }}" | base64 -d > config.ovpn
 
       - name: Connect VPN
         run: sudo openvpn3 session-start --dco true --config config.ovpn --background
@@ -56,4 +61,4 @@ jobs:
   
       - name: Kill VPN connection
         if: always()
-        run: sudo killall openvpn
+        run: sudo killall openvpn3

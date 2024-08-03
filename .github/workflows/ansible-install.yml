@@ -12,6 +12,7 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v2
 
+      # Taken here: https://github.com/dbritto-dev/openvpn3-action/blob/main/action.yml#L25
       - name: Install OpenVPN
         run: |
           export DISTRO=$(lsb_release --codename | cut -f2)
