@@ -52,26 +52,11 @@
     - raspberry_pi|default(false)
 
 - name: Run rpi-eeprom update on Pi
-  become: yes
+  become: true
   command: rpi-eeprom-update
 
-- name: Add Ansible user to video group
-  user:
-    name: '{{ ansible_user }}'
-    groups: 
-    - video
-    append: yes
-
-- name: Mount bpf
-  become: yes
-  mount:
-    src: bpffs
-    path: /sys/fs/bpf
-    fstype: bpf
-    state: mounted
-
 # - name: Set thermal rules
-#   become: yes
+#   become: true
 #   template:
 #     src: thermal-settings.rules.j2
 #     dest: /etc/udev/rules.d/50-rpi-fan.rules
@@ -80,9 +65,9 @@
 #     mode: 0644
 
 # - name: Reload udev thermal rules
-#   become: yes
+#   become: true
 #   command: udevadm control --reload-rules 
   
 # - name: Trigger udevadm reload
-#   become: yes
+#   become: true
 #   command: udevadm trigger

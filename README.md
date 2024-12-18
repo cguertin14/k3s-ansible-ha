@@ -26,11 +26,11 @@ Master and nodes must have passwordless SSH access
 First create a new directory based on the `sample` directory within the `inventory` directory:
 
 ```bash
-$ cp -R inventory/sample inventory/pi-cluster
+$ cp -R inventory/sample inventory/cluster
 ...
 ```
 
-Second, edit `inventory/pi-cluster/hosts.ini` to match the system information gathered above. For example:
+Second, edit `inventory/cluster/hosts.ini` to match the system information gathered above. For example:
 
 ```bash
 [master]
@@ -44,13 +44,13 @@ master
 node
 ```
 
-If needed, you can also edit `inventory/pi-cluster/group_vars/all.yml` to match your environment.
+If needed, you can also edit `inventory/cluster/group_vars/all.yml` to match your environment.
 For instance, the `ansible_user` variable should probably be changed, as well as `ansible_sudo_pass` if needed.
 
 Start provisioning of the cluster using the following command:
 
 ```bash
-$ ansible-playbook site.yml -i inventory/pi-cluster/hosts.ini --extra-vars "ansible_sudo_pass=SPECIFY_PWD_HERE"
+$ ansible-playbook install.yml -i inventory/cluster/hosts.ini --extra-vars "ansible_sudo_pass=SPECIFY_PWD_HERE"
 ...
 ```
 
