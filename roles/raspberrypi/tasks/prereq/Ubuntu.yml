@@ -12,7 +12,7 @@
   apt:
     autoremove: yes
     pkg:
-    - linux-modules-extra-raspi
+    # - linux-modules-extra-raspi # not needed, and had been renamed.
     - raspi-config
     - rpi-eeprom
 
