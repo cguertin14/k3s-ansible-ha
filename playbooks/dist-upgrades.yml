@@ -20,9 +20,9 @@
       name: k3s
       state: stopped
 
-  - name: Upgrade distribution version (dev mode enabled)
+  - name: Upgrade distribution version
     become: true
-    command: do-release-upgrade -f DistUpgradeViewNonInteractive -d
+    command: do-release-upgrade -f DistUpgradeViewNonInteractive
 
   - name: Recompile vmlinuz boot file into vmlinux
     command: dd if=vmlinuz bs=1 | zcat > vmlinux
