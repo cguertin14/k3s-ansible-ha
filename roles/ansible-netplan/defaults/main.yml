@@ -80,7 +80,6 @@ netplan_configuration:
 netplan_remove_existing: true
 
 netplan_packages:
-  - nplan
   - netplan.io
 
 netplan_pri_domain: example.org
