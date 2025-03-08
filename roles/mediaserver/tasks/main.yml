@@ -16,7 +16,7 @@
   apt:
     autoremove: yes
     pkg:
-    - linux-generic-hwe-22.04 # Warning: Ubuntu 22.04-specific, irrelevant on Linux Kernel >=5.16
+    - linux-generic-hwe-24.04 # Warning: Ubuntu 24.04-specific, irrelevant on Linux Kernel >=5.16
     - intel-opencl-icd
     - intel-media-va-driver-non-free
     - intel-gpu-tools
