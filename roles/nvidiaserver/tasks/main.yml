@@ -1,0 +1,105 @@
+- name: Add Ansible user to render group
+  become: true
+  user:
+    name: '{{ ansible_user }}'
+    append: yes
+    groups: 
+    - render
+
+#
+# Storage-related packages
+#
+- name: Install lvm2 for ceph
+  become: true
+  apt:
+    autoremove: yes
+    pkg:
+    - lvm2
+
+#
+# Graphics-related packages
+#
+- name: Install Intel graphics packages
+  become: true
+  apt:
+    autoremove: yes
+    pkg:
+    - intel-opencl-icd
+    - intel-media-va-driver-non-free
+    - intel-gpu-tools
+    - libdrm-intel1
+
+- name: Install Nvidia graphics packages
+  become: true
+  apt:
+    autoremove: yes
+    pkg:
+    # TODO: Continuously monitor this list of packages for updates.
+    - libnvidia-decode-570-server
+    - libnvidia-encode-570-server
+    - nvidia-driver-570-server
+    - nvidia-utils-570-server
+    - nvidia-settings
+
+## For more info: 
+#
+# * https://rancher.com/docs/k3s/latest/en/advanced/#enabling-legacy-iptables-on-raspbian-buster
+# * https://github.com/k3s-io/k3s/issues/1019#issuecomment-593043089
+
+### UNCOMMENT FOLLOWING LINES ON FIRST INSTALL ONLY.
+
+# - name: Use legacy iptables (part 1)
+#   become: true
+#   command: iptables -F
+
+# - name: Use legacy iptables ipv4 (part 2)
+#   become: true
+#   community.general.alternatives:
+#     name: iptables
+#     path: /usr/sbin/iptables-legacy
+
+# - name: Use legacy iptables ipv6 (part 3)
+#   become: true
+#   community.general.alternatives:
+#     name: ip6tables
+#     path: /usr/sbin/ip6tables-legacy
+
+# - name: Enable internal traffic
+#   become: true
+#   ansible.builtin.iptables:
+#     chain: INPUT
+#     source: "{{ k3s_pods_cidr }}"
+#     in_interface: cilium_host
+#     jump: ACCEPT
+
+# # Reference: https://github.com/cilium/cilium/issues/18131#issuecomment-988160016
+# - name: Override network filtering settings
+#   become: true
+#   copy:
+#     dest: /etc/sysctl.d/90-override.conf
+#     content: |
+#       net.ipv4.conf.default.rp_filter = 0
+#       net.ipv4.conf.*.rp_filter = 0
+
+# - name: Disable ufw firewall
+#   become: true
+#   ansible.builtin.service:
+#     name: ufw
+#     state: stopped
+#     enabled: false
+
+# - name: Save iptables rules
+#   become: true
+#   command: iptables-save
+
+# - name: Create rc.local file
+#   command: touch /etc/rc.local
+#   args:
+#     creates: /etc/rc.local
+
+# - name: Append content to /etc/rc.local
+#   lineinfile:
+#     path: /etc/rc.local
+#     backrefs: yes
+#     regexp: '^((?!.*\service procps reload\b).*)$'
+#     line: '\1 service procps reload'

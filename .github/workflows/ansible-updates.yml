@@ -45,6 +45,7 @@ jobs:
           ping 192.168.0.8 -c5
           ping 192.168.0.9 -c5
           ping 192.168.0.10 -c5
+          ping 192.168.0.11 -c5
 
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
