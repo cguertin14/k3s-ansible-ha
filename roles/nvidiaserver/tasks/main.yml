@@ -29,17 +29,19 @@
     - intel-gpu-tools
     - libdrm-intel1
 
-- name: Install Nvidia graphics packages
+# Hardcoded nvidia 570 driver
+- name: Install Nvidia driver with ubuntu-drivers
+  become: true
+  ansible.builtin.command: ubuntu-drivers install nvidia:570
+
+- name: Post-driver installation packages installation
   become: true
   apt:
     autoremove: yes
     pkg:
-    # TODO: Continuously monitor this list of packages for updates.
-    - libnvidia-decode-570-server
-    - libnvidia-encode-570-server
-    - nvidia-driver-570-server
-    - nvidia-utils-570-server
-    - nvidia-settings
+    - nvidia-cuda-toolkit
+    - nvidia-cudnn
+    - nvidia-container-toolkit
 
 ## For more info: 
 #

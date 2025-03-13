@@ -23,7 +23,7 @@
   roles:
   - role: mediaserver
 
-- name: Nvidia Server configuration
+- name: NVIDIA Server configuration
   hosts: nvidiaserver
   gather_facts: true
   become: true
@@ -43,3 +43,10 @@
   any_errors_fatal: true
   roles:
   - role: kubeconfig
+
+- name: Post-installation steps for NVIDIA server
+  hosts: nvidiaserver
+  gather_facts: true
+  become: true
+  roles:
+  - role: nvidiaserver-postinstall

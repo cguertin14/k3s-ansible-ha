@@ -1,0 +1,9 @@
+- name: Configure container runtime to use Nvidia GPU
+  become: true
+  ansible.builtin.command: nvidia-ctk runtime configure --runtime=containerd
+
+- name: Restart k3s-agent
+  become: true
+  ansible.builtin.systemd:
+    name: k3s-agent
+    state: restarted
