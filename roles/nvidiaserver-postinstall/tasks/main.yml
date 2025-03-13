@@ -5,5 +5,5 @@
 - name: Restart k3s-agent
   become: true
   ansible.builtin.systemd:
-    name: k3s-agent
+    name: k3s
     state: restarted
