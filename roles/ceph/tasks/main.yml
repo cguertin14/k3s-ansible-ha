@@ -1,22 +1,30 @@
-# Docs: https://jellyfin.org/docs/general/administration/hardware-acceleration/intel
-
-- name: Add Ansible user to render group
+- name: Add Ansible user to render/video groups
   become: true
   user:
     name: '{{ ansible_user }}'
     append: yes
     groups: 
     - render
+    - video
 
 #
-# CRUCIAL packages without which Jellyfin Transcoding will not work.
+# Storage-related packages
 #
-- name: Install APT packages
+- name: Install lvm2 for ceph
   become: true
   apt:
     autoremove: yes
     pkg:
-    - linux-generic-hwe-24.04 # Warning: Ubuntu 24.04-specific, irrelevant on Linux Kernel >=5.16
+    - lvm2
+
+#
+# Graphics-related packages
+#
+- name: Install Intel graphics packages
+  become: true
+  apt:
+    autoremove: yes
+    pkg:
     - intel-opencl-icd
     - intel-media-va-driver-non-free
     - intel-gpu-tools

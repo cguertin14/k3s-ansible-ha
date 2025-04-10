@@ -13,15 +13,8 @@
   become: true
   roles:
   - role: raspberrypi
-  - role: hostname        # this is done manually for the Intel NUC & Nvidia Server.
-  - role: ansible-netplan # this is done manually for the Intel NUC & Nvidia Server.
-
-- name: Media Server configuration
-  hosts: mediaserver
-  gather_facts: true
-  become: true
-  roles:
-  - role: mediaserver
+  - role: hostname        # this is done manually for the amd64 hosts.
+  - role: ansible-netplan # this is done manually for the amd64 hosts.
 
 - name: NVIDIA Server configuration
   hosts: nvidiaserver
@@ -29,6 +22,13 @@
   become: true
   roles:
   - role: nvidiaserver
+
+- name: Ceph configuration
+  hosts: ceph
+  gather_facts: true
+  become: true
+  roles:
+  - role: ceph
 
 - name: Build a cluster with an HA control plane
   hosts: k3s_cluster

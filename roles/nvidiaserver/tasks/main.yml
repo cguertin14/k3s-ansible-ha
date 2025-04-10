@@ -1,21 +1,3 @@
-- name: Add Ansible user to render group
-  become: true
-  user:
-    name: '{{ ansible_user }}'
-    append: yes
-    groups: 
-    - render
-
-#
-# Storage-related packages
-#
-- name: Install lvm2 for ceph
-  become: true
-  apt:
-    autoremove: yes
-    pkg:
-    - lvm2
-
 #
 # Graphics-related packages
 #
