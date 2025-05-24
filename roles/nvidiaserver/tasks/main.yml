@@ -10,11 +10,30 @@
     - intel-media-va-driver-non-free
     - intel-gpu-tools
     - libdrm-intel1
+    # not intel-related, but frick it, necessary for next step
+    - alsa-utils
 
 # Hardcoded nvidia 570 driver
 - name: Install Nvidia driver with ubuntu-drivers
   become: true
   ansible.builtin.command: ubuntu-drivers install nvidia:570
+
+# NVIDIA Container Toolkit prerequisites
+- name: Download the NVIDIA repository GPG key if it does not exist
+  shell: |
+    if [ ! -f /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg ]; then
+      curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+    fi
+  args:
+    creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+- name: Add the NVIDIA repository
+  shell: |
+    echo "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /" | tee /etc/apt/sources.list.d/nvidia_github_io_libnvidia_container_stable_ubuntu24_04.list
+  args:
+    creates: /etc/apt/sources.list.d/nvidia_github_io_libnvidia_container_stable_ubuntu24_04.list
+- name: Update Repositories
+  apt:
+    update_cache: yes
 
 - name: Post-driver installation packages installation
   become: true
