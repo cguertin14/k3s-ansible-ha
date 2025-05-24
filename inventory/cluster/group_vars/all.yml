@@ -37,10 +37,10 @@ k3s_server:
   # # remove unused container images when FS space is below 50%
   # -  eviction-hard=nodefs.available<50%
 
-  # etcd backups options
+  # etcd backups options - DISABLED for now, since Velero handles this.
   #
-  etcd-snapshot-schedule-cron: '0 2 * * *' # everyday at 2AM
-  etcd-snapshot-retention: '7' # keep 7 backups in total (for a 7-day period)
+  # etcd-snapshot-schedule-cron: '0 2 * * *' # everyday at 2AM
+  # etcd-snapshot-retention: '7' # keep 7 backups in total (for a 7-day period)
   
   # etcd restore options
   #
