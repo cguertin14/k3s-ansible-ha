@@ -28,7 +28,7 @@ jobs:
           sudo openvpn3 config-manage --config HOME_VPN --allow-compression yes
 
       - name: Connect VPN
-        run: sudo openvpn3 session-start --config HOME_VPN
+        run: sudo openvpn3 session-start --background --config HOME_VPN
 
       - name: Wait for a VPN connection
         timeout-minutes: 1
