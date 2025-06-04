@@ -11,24 +11,16 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v2
 
-      # Taken here: https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux
       - name: Install OpenVPN
         run: |
-          export DISTRO=$(lsb_release --codename | cut -f2)
-          sudo apt-get install -y apt-transport-https curl
-          sudo mkdir -p /etc/apt/keyrings
-          sudo curl -sSfL https://packages.openvpn.net/packages-repo.gpg | sudo tee /etc/apt/keyrings/openvpn.asc
-          echo "deb [signed-by=/etc/apt/keyrings/openvpn.asc] https://packages.openvpn.net/openvpn3/debian $DISTRO main" | sudo tee -a /etc/apt/sources.list.d/openvpn3.list
-          sudo apt-get update -y && sudo apt-get install -y openvpn3
+          sudo apt-get update
+          sudo apt-get --assume-yes --no-install-recommends install openvpn     
 
       - name: Setup VPN config
-        run: |
-          echo -n "${{ secrets.VPN_CONFIG }}" | base64 -d > config.ovpn
-          sudo openvpn3 config-import --config config.ovpn --name HOME_VPN
-          sudo openvpn3 config-manage --config HOME_VPN --allow-compression yes
+        run: echo "${{ secrets.VPN_CONFIG }}" > config.ovpn
 
       - name: Connect VPN
-        run: sudo openvpn3 session-start --background --config HOME_VPN
+        run: sudo openvpn --config config.ovpn --log vpn.log --daemon
 
       - name: Wait for a VPN connection
         timeout-minutes: 1
@@ -65,4 +57,6 @@ jobs:
   
       - name: Kill VPN connection
         if: always()
-        run: sudo openvpn3 session-manage --config HOME_VPN --disconnect
+        run: |
+          sudo chmod 644 vpn.log
+          sudo killall openvpn    
