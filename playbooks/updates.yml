@@ -7,7 +7,7 @@
   tasks:
   - name: Clean unused docker images on the k8s nodes
     become: true
-    ansible.builtin.command: crictl rmi --prune
+    ansible.builtin.command: crictl rmi $(crictl images -q)
   
   - name: Update apt-get repo and cache, plus packages
     apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
