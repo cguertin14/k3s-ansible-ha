@@ -16,7 +16,7 @@
 # Hardcoded nvidia 570 driver
 - name: Install Nvidia driver with ubuntu-drivers
   become: true
-  ansible.builtin.command: ubuntu-drivers install nvidia:570
+  ansible.builtin.command: ubuntu-drivers install nvidia:570 --gpgpu
 
 # NVIDIA Container Toolkit prerequisites
 - name: Download the NVIDIA repository GPG key if it does not exist
