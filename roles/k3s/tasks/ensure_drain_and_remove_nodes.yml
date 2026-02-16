@@ -30,8 +30,10 @@
             --ignore-daemonsets
             --{{ k3s_drain_command[ansible_version.string is version_compare('1.22', '>=')] }}
             --force
+            --timeout=15s
       delegate_to: "{{ k3s_control_delegate }}"
       run_once: true
+      ignore_errors: true
       when:
         - kubectl_get_nodes_result.stdout is defined
         - hostvars[item].ansible_hostname in kubectl_get_nodes_result.stdout
@@ -42,9 +44,10 @@
 
     - name: Ensure uninstalled nodes are removed # noqa no-changed-when
       ansible.builtin.command:
-        cmd: "{{ k3s_install_dir }}/kubectl delete node {{ hostvars[item].ansible_hostname }}"
+        cmd: "{{ k3s_install_dir }}/kubectl delete node {{ hostvars[item].ansible_hostname }} --timeout=15s"
       delegate_to: "{{ k3s_control_delegate }}"
       run_once: true
+      ignore_errors: true
       when:
         - kubectl_get_nodes_result.stdout is defined
         - hostvars[item].ansible_hostname in kubectl_get_nodes_result.stdout
