@@ -8,6 +8,12 @@
       "matchStrings": ["image:\\s*\"ghcr\\.io/kube-vip/kube-vip:(?<currentValue>v[\\d\\.]+)\""],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "kube-vip/kube-vip"
+    },
+    {
+      "fileMatch": ["inventory/cluster/group_vars/all\\.yml$"],
+      "matchStrings": ["k3s_release_version:\\s*(?<currentValue>v[\\d\\.]+\\+k3s\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "k3s-io/k3s"
     }
   ]
 }
