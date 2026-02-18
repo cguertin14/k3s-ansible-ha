@@ -13,7 +13,6 @@ k3s_etcd_datastore: true
 # kube-vip VIP address for HA control plane.
 kube_vip_address: "192.168.0.201"
 k3s_registration_address: "192.168.0.201"
-kube_vip_version: v1.0.4 # TODO: Check https://github.com/kube-vip/kube-vip/releases from time to time.
 k3s_server_pod_manifests_templates:
   - kube-vip.yaml.j2
 

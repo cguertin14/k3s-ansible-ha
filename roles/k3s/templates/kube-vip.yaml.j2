@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
     - name: kube-vip
-      image: "ghcr.io/kube-vip/kube-vip:{{ kube_vip_version | default('v1.0.4') }}"
+      image: "ghcr.io/kube-vip/kube-vip:v1.0.3"
       imagePullPolicy: IfNotPresent
       args:
         - manager
