@@ -1,0 +1,13 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "enabled": true,
+  "enabledManagers": ["regex"],
+  "regexManagers": [
+    {
+      "fileMatch": ["roles/k3s/templates/kube-vip\\.yaml\\.j2$"],
+      "matchStrings": ["image:\\s*\"ghcr\\.io/kube-vip/kube-vip:(?<currentValue>v[\\d\\.]+)\""],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "kube-vip/kube-vip"
+    }
+  ]
+}
