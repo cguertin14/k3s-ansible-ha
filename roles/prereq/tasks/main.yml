@@ -4,6 +4,16 @@
     state: disabled
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
+- name: Increase inotify limits
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { name: fs.inotify.max_user_instances, value: "512" }
+    - { name: fs.inotify.max_user_watches, value: "524288" }
+
 - name: Enable IPv4 forwarding
   sysctl:
     name: net.ipv4.ip_forward
