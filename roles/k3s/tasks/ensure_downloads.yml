@@ -26,6 +26,10 @@
     return_content: true
   register: k3s_hash_sum_raw
   check_mode: false
+  delegate_to: localhost
+  retries: 3
+  delay: 5
+  until: k3s_hash_sum_raw is succeeded
 
 - name: Ensure sha256sum is set from hashsum variable
   ansible.builtin.set_fact:
