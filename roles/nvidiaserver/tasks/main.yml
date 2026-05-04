@@ -18,6 +18,14 @@
   become: true
   ansible.builtin.command: ubuntu-drivers install nvidia:570 --gpgpu
 
+# ubuntu-drivers --gpgpu installs the no-dkms variant, which breaks on kernel updates.
+# Explicitly install DKMS so the nvidia module is rebuilt for new kernels.
+- name: Ensure NVIDIA DKMS module is installed
+  become: true
+  apt:
+    pkg:
+    - nvidia-dkms-570
+
 # NVIDIA Container Toolkit prerequisites
 - name: Download the NVIDIA repository GPG key if it does not exist
   shell: |
