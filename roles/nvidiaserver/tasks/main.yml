@@ -24,7 +24,7 @@
   become: true
   apt:
     pkg:
-    - nvidia-dkms-570
+    - nvidia-dkms-580
 
 # NVIDIA Container Toolkit prerequisites
 - name: Download the NVIDIA repository GPG key if it does not exist
@@ -36,9 +36,9 @@
     creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 - name: Add the NVIDIA repository
   shell: |
-    echo "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /" | tee /etc/apt/sources.list.d/nvidia_github_io_libnvidia_container_stable_ubuntu24_04.list
+    echo "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /" | tee /etc/apt/sources.list.d/nvidia_github_io_libnvidia_container_stable_ubuntu26_04.list
   args:
-    creates: /etc/apt/sources.list.d/nvidia_github_io_libnvidia_container_stable_ubuntu24_04.list
+    creates: /etc/apt/sources.list.d/nvidia_github_io_libnvidia_container_stable_ubuntu26_04.list
 - name: Update Repositories
   apt:
     update_cache: yes
