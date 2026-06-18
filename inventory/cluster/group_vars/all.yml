@@ -1,5 +1,6 @@
 ---
 ansible_user: charles
+ansible_python_interpreter: /usr/bin/python3
 
 k3s_state: installed # 'uninstalled' to uninstall k3s
 k3s_pods_cidr: 10.42.0.0/16

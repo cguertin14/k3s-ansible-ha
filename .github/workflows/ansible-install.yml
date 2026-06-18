@@ -54,7 +54,10 @@ jobs:
           options: |
             --inventory inventory/cluster/hosts.ini
             --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
-            --verbose
+            --timeout 15
+            --forks 1
+            --ssh-common-args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+            -vvv
   
       - name: Kill VPN connection
         if: always()

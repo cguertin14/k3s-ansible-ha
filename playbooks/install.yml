@@ -3,6 +3,9 @@
 - name: Prerequisites to k3s
   hosts: k3s_cluster
   gather_facts: true
+  gather_subset:
+    - min
+  gather_timeout: 10
   become: true
   roles:
   - role: prereq
@@ -10,6 +13,9 @@
 - name: Raspberry Pi configuration
   hosts: raspberrypi
   gather_facts: true
+  gather_subset:
+    - min
+  gather_timeout: 10
   become: true
   roles:
   - role: raspberrypi
@@ -19,6 +25,9 @@
 - name: NVIDIA Server configuration
   hosts: nvidiaserver
   gather_facts: true
+  gather_subset:
+    - min
+  gather_timeout: 10
   become: true
   roles:
   - role: nvidiaserver
@@ -26,6 +35,9 @@
 - name: Ceph configuration
   hosts: ceph
   gather_facts: true
+  gather_subset:
+    - min
+  gather_timeout: 10
   become: true
   roles:
   - role: ceph
@@ -47,6 +59,9 @@
 - name: Post-installation steps for NVIDIA server
   hosts: nvidiaserver
   gather_facts: true
+  gather_subset:
+    - min
+  gather_timeout: 10
   become: true
   roles:
   - role: nvidiaserver-postinstall
