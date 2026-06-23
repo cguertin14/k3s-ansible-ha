@@ -3,6 +3,8 @@
 - name: Apply updates to APT on each node
   hosts: k3s_cluster
   gather_facts: true
+  gather_subset:
+    - min
   become: true
   tasks:
   - name: Clean unused docker images on the k8s nodes

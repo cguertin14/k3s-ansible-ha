@@ -7,6 +7,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      ANSIBLE_CONFIG: ${{ github.workspace }}/ansible.cfg
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v2
@@ -53,7 +55,9 @@ jobs:
           options: |
             --inventory inventory/cluster/hosts.ini
             --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
-            --verbose
+            --timeout 15
+            --forks 1
+            -vvv
   
       - name: Kill VPN connection
         if: always()
