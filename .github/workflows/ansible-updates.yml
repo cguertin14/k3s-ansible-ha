@@ -57,7 +57,6 @@ jobs:
             --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
             --timeout 15
             --forks 1
-            -vvv
   
       - name: Kill VPN connection
         if: always()
