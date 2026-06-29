@@ -55,8 +55,6 @@ jobs:
           options: |
             --inventory inventory/cluster/hosts.ini
             --extra-vars ansible_sudo_pass=${{ secrets.PASSWORD }}
-            --timeout 15
-            --forks 1
   
       - name: Kill VPN connection
         if: always()
