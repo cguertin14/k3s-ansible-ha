@@ -2,46 +2,87 @@
 
 - name: Apply updates to APT on each node
   hosts: k3s_cluster
+  serial: 4
   gather_facts: true
   gather_subset:
     - min
   become: true
   tasks:
-  - name: Clean unused docker images on the k8s nodes
-    become: true
-    ignore_errors: true
-    ansible.builtin.shell: crictl images --no-trunc | grep -v "velero" | awk 'NR>1 {print $3}' | xargs -r crictl rmi
-  
-  - name: Update apt-get repo and cache, plus packages
-    apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+  - block:
+    - name: Stop and mask automatic apt background jobs
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: stopped
+        masked: true
+      loop:
+        - unattended-upgrades.service
+        - apt-daily.service
+        - apt-daily-upgrade.service
+        - apt-daily.timer
+        - apt-daily-upgrade.timer
+      failed_when: false
 
-  - name: Wait for dpkg to be usable
-    become: true
-    shell:  while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
+    - name: Wait for any existing apt/dpkg activity to finish
+      ansible.builtin.shell: |
+        pgrep -a -x apt || true
+        pgrep -a -x apt-get || true
+        pgrep -a -x dpkg || true
+        pgrep -a -x unattended-upgrade || true
+        if pgrep -x apt >/dev/null || pgrep -x apt-get >/dev/null || pgrep -x dpkg >/dev/null || pgrep -x unattended-upgrade >/dev/null; then
+          exit 1
+        fi
+        exit 0
+      register: apt_activity
+      changed_when: false
+      retries: 90
+      delay: 10
+      until: apt_activity.rc == 0
 
-  - name: Upgrade apt packages
-    become: true
-    apt: upgrade=yes
+    - name: Update apt-get repo and cache, plus packages
+      ansible.builtin.apt:
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+        lock_timeout: 600
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+        NEEDRESTART_MODE: a
 
-  - name: Wait for dpkg to be usable
-    become: true
-    shell:  while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
+    - name: Upgrade apt packages
+      ansible.builtin.apt:
+        upgrade: yes
+        force_apt_get: yes
+        lock_timeout: 1200
+        dpkg_options: force-confdef,force-confold
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+        NEEDRESTART_MODE: a
+        APT_LISTCHANGES_FRONTEND: none
+        UCF_FORCE_CONFFOLD: "1"
 
-  - name: Remove dependencies that are no longer required
-    apt:
-      autoremove: yes
+    - name: Remove dependencies that are no longer required
+      ansible.builtin.apt:
+        autoremove: yes
 
-  # NOTE: Reboots are handled by Kured, gracefully.
-  # - name: Check if a reboot is needed
-  #   register: reboot_required_file
-  #   stat: path=/var/run/reboot-required get_md5=no
+    always:
+      - name: Unmask automatic apt background jobs
+        ansible.builtin.systemd:
+          name: "{{ item }}"
+          masked: false
+        loop:
+          - unattended-upgrades.service
+          - apt-daily.service
+          - apt-daily-upgrade.service
+          - apt-daily.timer
+          - apt-daily-upgrade.timer
+        failed_when: false
 
-  # - name: Reboot the box if kernel updated
-  #   reboot:
-  #     msg: "Reboot initiated by Ansible for kernel updates"
-  #     connect_timeout: 5
-  #     reboot_timeout: 300
-  #     pre_reboot_delay: 0
-  #     post_reboot_delay: 30
-  #     test_command: uptime
-  #   when: reboot_required_file.stat.exists
+      - name: Restart automatic apt background jobs
+        ansible.builtin.systemd:
+          name: "{{ item }}"
+          state: started
+        loop:
+          - apt-daily.timer
+          - apt-daily-upgrade.timer
+          - unattended-upgrades.service
+        failed_when: false
