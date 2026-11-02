@@ -8,6 +8,7 @@
   become: true
   roles:
   - role: prereq
+  - role: container-apparmor
 
 - name: Raspberry Pi configuration
   hosts: raspberrypi

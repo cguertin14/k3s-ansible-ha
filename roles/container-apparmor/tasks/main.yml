@@ -1,0 +1,39 @@
+---
+- name: Install AppArmor tools
+  ansible.builtin.apt:
+    name: apparmor
+    state: present
+    lock_timeout: 600
+
+- name: Install confined CNPG profile
+  ansible.builtin.template:
+    src: cnpg-postgres.j2
+    dest: /etc/apparmor.d/cnpg-postgres
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/apparmor_parser --skip-kernel-load --skip-cache %s
+  register: cnpg_apparmor_profile
+
+- name: Enable AppArmor profile loading at boot
+  ansible.builtin.systemd:
+    name: apparmor
+    enabled: true
+    state: started
+
+- name: Inspect loaded AppArmor profiles
+  ansible.builtin.command: cat /sys/kernel/security/apparmor/profiles
+  register: cnpg_apparmor_loaded
+  changed_when: false
+  check_mode: false
+
+- name: Load or refresh confined CNPG profile
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/apparmor_parser
+      - --replace
+      - --skip-read-cache
+      - /etc/apparmor.d/cnpg-postgres
+  when: >-
+    cnpg_apparmor_profile.changed or
+    'cnpg-postgres (enforce)' not in cnpg_apparmor_loaded.stdout_lines

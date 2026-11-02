@@ -54,6 +54,14 @@ $ ansible-playbook install.yml -i inventory/cluster/hosts.ini --extra-vars "ansi
 ...
 ```
 
+## Container AppArmor policy
+
+The `container-apparmor` role installs a persistent, confined `cnpg-postgres`
+profile on every cluster node. It runs during installation and after scheduled
+APT upgrades. The profile is loaded immediately and by Ubuntu's AppArmor service
+at boot. See [the migration runbook](roles/container-apparmor/README.md) before
+switching CloudNativePG from the temporary `Unconfined` workaround.
+
 ## Kubeconfig
 
 To get access to your **Kubernetes** cluster just

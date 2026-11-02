@@ -64,6 +64,10 @@
       ansible.builtin.apt:
         autoremove: yes
 
+    - name: Ensure confined container profiles after package upgrades
+      ansible.builtin.include_role:
+        name: container-apparmor
+
     always:
       - name: Unmask automatic apt background jobs
         ansible.builtin.systemd:
