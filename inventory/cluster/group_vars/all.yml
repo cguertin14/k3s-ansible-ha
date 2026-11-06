@@ -36,6 +36,7 @@ k3s_server:
   - traefik
   - servicelb
   - metrics-server
+  - gateway-api-crd
 
   # extra flags for the kubelet process
   #
