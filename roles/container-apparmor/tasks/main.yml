@@ -15,6 +15,22 @@
     validate: /usr/sbin/apparmor_parser --skip-kernel-load --skip-cache %s
   register: cnpg_apparmor_profile
 
+- name: Install confined Arr profiles
+  ansible.builtin.template:
+    src: arr-app.j2
+    dest: "/etc/apparmor.d/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/apparmor_parser --skip-kernel-load --skip-cache %s
+  loop:
+    - arr-radarr
+    - arr-sonarr
+    - arr-prowlarr
+  vars:
+    arr_apparmor_profile: "{{ item }}"
+  register: arr_apparmor_profiles
+
 - name: Enable AppArmor profile loading at boot
   ansible.builtin.systemd:
     name: apparmor
@@ -23,7 +39,7 @@
 
 - name: Inspect loaded AppArmor profiles
   ansible.builtin.command: cat /sys/kernel/security/apparmor/profiles
-  register: cnpg_apparmor_loaded
+  register: apparmor_loaded_profiles
   changed_when: false
   check_mode: false
 
@@ -36,4 +52,19 @@
       - /etc/apparmor.d/cnpg-postgres
   when: >-
     cnpg_apparmor_profile.changed or
-    'cnpg-postgres (enforce)' not in cnpg_apparmor_loaded.stdout_lines
+    'cnpg-postgres (enforce)' not in apparmor_loaded_profiles.stdout_lines
+
+- name: Load or refresh confined Arr profiles
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/apparmor_parser
+      - --replace
+      - --skip-read-cache
+      - "/etc/apparmor.d/{{ item }}"
+  loop:
+    - arr-radarr
+    - arr-sonarr
+    - arr-prowlarr
+  when: >-
+    arr_apparmor_profiles.changed or
+    (item + ' (enforce)') not in apparmor_loaded_profiles.stdout_lines

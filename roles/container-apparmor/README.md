@@ -1,4 +1,4 @@
-# Confined CloudNativePG AppArmor profile
+# Confined container AppArmor profiles
 
 ## Purpose and status
 
@@ -26,11 +26,12 @@ Peer rules apply to processes sharing this profile, not to an individual pod.
 PID namespaces and the other Linux permission checks still apply. This is a
 runtime-default-style container policy, not a PostgreSQL file allowlist.
 
-The role owns `/etc/apparmor.d/cnpg-postgres`; it does not replace containerd's
-generated default profile. Ubuntu's AppArmor service loads the policy at boot.
-Ansible validates templates before installation and reloads changed or missing
-profiles in enforce mode. Kernel upgrades remain included in the scheduled APT
-upgrade, and kured retains responsibility for reboots.
+The role owns `/etc/apparmor.d/cnpg-postgres` and the three Arr profiles described
+below; it does not replace containerd's generated default profile. Ubuntu's
+AppArmor service loads the policies at boot. Ansible validates templates before
+installation and reloads changed or missing profiles in enforce mode. Kernel
+upgrades remain included in the scheduled APT upgrade, and kured retains
+responsibility for reboots.
 
 ## Deploy the host profile
 
@@ -112,6 +113,40 @@ sudo journalctl -k --since '10 minutes ago' --grep 'apparmor="DENIED".*cnpg-post
 After the next normal kured reboot, repeat the profile-loaded and database-health
 checks to confirm boot persistence. Parser success alone does not establish that
 the kernel's stacked-label signal mediation works with this policy.
+
+## Arr compatibility profiles
+
+Radarr, Sonarr, and Prowlarr on `mediaserver` have shown internal AppArmor signal
+denials around native .NET faults. The denials may be causal or consequential; the
+exact kernel/runtime defect is unconfirmed. These local policies are a narrowly
+scoped compatibility measure, not a kernel bug fix.
+
+The role installs `arr-radarr`, `arr-sonarr`, and `arr-prowlarr`, each with the
+containerd-style filesystem and kernel-interface restrictions above. Each profile
+allows runtime stop signals and send/receive signals only between peers using
+that same app's profile (including its observed stacked `//&unconfined` label).
+Using separate profiles avoids granting signal permissions between Radarr,
+Sonarr, and Prowlarr. The policies are installed on all `k3s_cluster` hosts so
+the workloads can be scheduled on any eligible node.
+
+First deploy and verify the host profiles using the Ansible commands above. Then
+allow GitOps to reconcile the `mediaplatform` manifests, which set only the three
+Arr workloads to `Localhost` profiles. Do not reconcile those workload changes
+before the profile exists on the node or Kubernetes will reject the pods.
+
+Verify the selected pod profiles:
+
+```bash
+kubectl get pods -n mediaplatform \
+  -o custom-columns='NAME:.metadata.name,TYPE:.spec.securityContext.appArmorProfile.type,PROFILE:.spec.securityContext.appArmorProfile.localhostProfile'
+```
+
+Confirm the process label on each app and monitor restart counts and kernel audit
+logs. A successful parse or pod start does not prove that the profile resolves the
+fault; confirm that internal restarts stabilize and no new matching AppArmor
+denials appear. If the policy does not help, revert the three GitOps profiles to
+the prior runtime setting and let GitOps recreate the pods before removing the
+host profiles. Preserve application data and PVCs throughout.
 
 ## Rollback and eventual removal
 
